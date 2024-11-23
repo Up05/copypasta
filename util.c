@@ -56,15 +56,10 @@ str del_esc_chars(str s) {
 str escape(str s) {
     int len = strlen(s);
     str buf = malloc(len * 2 + 1); // worst case 
-    memset(buf, 0, len * 2 + 1);
+    // memset(buf, 0, len * 2 + 1);
 
     int j = 0;
     for(int i = 0; i < strlen(s); i ++) {
-        if(s[i] == 0xA) { // What the fuck?
-            buf[j] = 0;
-            break;
-        }
-
         if(s[i] == '\\' || s[i] == '{') {
             buf[j] = '\\';
             buf[j + 1] = s[i];
@@ -74,6 +69,8 @@ str escape(str s) {
             j ++;
         }
     }
+    if(buf[j - 1] == 0xA) buf[j - 1] = 0;
+    buf[j] = 0;
     return buf;
 }
 
