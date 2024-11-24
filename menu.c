@@ -16,6 +16,7 @@ Item make_item(str title, str text) { return (Item) { title, text }; }
 Category make_category(str name, char key) { return (Category) { name, key }; }
 
 void draw_categories() {/*{{{*/
+    u_move(0, 0);
     foreach(i, categories) {
         Category c = categories[i];
         if(c.name == 0) break;
@@ -25,6 +26,8 @@ void draw_categories() {/*{{{*/
         addstr(repeat(' ', SPACING_X));
         last_category_x += 5 + rune_count(c.name);
     }
+    addstr("[&]Add category  ");
+    u_return();
 }/*}}}*/
 
 int add_category(str name, char key) {/*{{{*/
@@ -44,10 +47,6 @@ int add_category(str name, char key) {/*{{{*/
     } 
     return -1;
 }/*}}}*/
-
-void draw_add_category() {
-    addstr("[&]Add category  ");
-}
 
 void draw_items() {/*{{{*/
     Category* c = categories + cur_category;
@@ -70,7 +69,7 @@ void draw_items() {/*{{{*/
         
         int x = START_X + longest_title * i_this_line;
 
-        if(x + longest_title >= COLS - 1) { y += SPACING_Y; i_this_line = 0; x = START_X; }
+        if(x + longest_title >= COLS - 1 || i_this_line > 'Z' - 'A') { y += SPACING_Y; i_this_line = 0; x = START_X; }
         u_move(x, y);
 
         row_offsets[i_this_line] = x;
@@ -119,8 +118,7 @@ void highlight_row(int y, int from) {/*{{{*/
 void draw_help() {
     u_move(0, min(24, LINES - 8));
     addstr("  in [?] ? is a key shortcut.\n");
-    addstr("  A..Z = categories, a..z = column, 1..9 = row\n");
-    addstr("    '&' and '+' = adding, 'q' = quit (deferred)\n");
+    addstr("  A..Z = categories, a..z = column, 1..9 = row, '&' and '+' = adding\n");
     addstr("  copy cmd: '" COPY_COMMAND "' (defined in config.h)\n");
     addstr("  edit cmd: '" EDIT_COMMAND "' (defined in config.h)\n");
     addstr("  category contents may be edited in '~/.config/ulti/copypasta/**'\n");
@@ -140,8 +138,6 @@ void u_refresh() {
     last_category_x = 0;
     draw_help();
     draw_categories();
-    draw_add_category();
-    u_return();
     draw_items();
     draw_last_key();
     refresh();

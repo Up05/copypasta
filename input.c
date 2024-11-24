@@ -109,6 +109,6 @@ bool handle_key(int key) {
         }
     }
 
-
-    return key != 'q';
+    return true;
+    // return key != 'q';
 }
