@@ -9,8 +9,8 @@ int last_category_x = 0;
 int plus_item_row = 0;
 int plus_item_col = 0;
 
-int item_table['Z' - 'A'][9] = {};
-int row_offsets['Z' - 'A'] = {};
+int item_table[LETTER_COUNT][9] = {};
+int row_offsets[LETTER_COUNT] = {};
 
 Item make_item(str title, str text) { return (Item) { title, text }; }
 Category make_category(str name, char key) { return (Category) { name, key }; }
@@ -69,7 +69,7 @@ void draw_items() {/*{{{*/
         
         int x = START_X + longest_title * i_this_line;
 
-        if(x + longest_title >= COLS - 1 || i_this_line > 'Z' - 'A') { y += SPACING_Y; i_this_line = 0; x = START_X; }
+        if(x + longest_title >= COLS - 1 || i_this_line >= LETTER_COUNT) { y += SPACING_Y; i_this_line = 0; x = START_X; }
         u_move(x, y);
 
         row_offsets[i_this_line] = x;
@@ -80,13 +80,13 @@ void draw_items() {/*{{{*/
             break;
         }
         addstr(item.title);
-        item_table[i_this_line][y - START_Y] = i;
+        item_table[i_this_line][(y - START_Y) / SPACING_Y] = i;
 
         i_this_line ++;
     }
 
     i_this_line = 0;
-    for(int x = START_X; x + longest_title < COLS && i_this_line <= 'Z' - 'A'; x += longest_title) {
+    for(int x = START_X; x + longest_title < COLS && i_this_line < LETTER_COUNT; x += longest_title) {
         u_move(x, 2);
         addf("[%c]", i_this_line + 'a');
         i_this_line ++;

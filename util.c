@@ -2,11 +2,11 @@
 
 str cat2(str a, str b) {
     int len_a = strlen(a), len_b = strlen(b);
-    int len = len_a + len_b + 1;
-    char* buf = malloc(len);
+    int len = len_a + len_b;
+    char* buf = malloc(len + 1);
     memcpy(buf,         a, len_a);
     memcpy(buf + len_a, b, len_b);
-    buf[len - 1] = 0;
+    buf[len] = 0;
     return buf;
 }
 
@@ -40,16 +40,16 @@ str del_esc_chars(str s) {
     str buf = malloc(len + 1);
     int j = 0;
     bool escaped = false;
-    for(int i = 0; i < len; i ++) {
-        if(escaped) escaped = false;
-        else if(s[i] == '\\') {
-            continue;
+    for(int i = 0; i < len; i += 1) {
+        if(!escaped && s[i] == '\\') {
             escaped = true;
+            continue;
         }
+        escaped = false;
         buf[j] = s[i];
         j ++;
     }
-    buf[len] = 0;
+    buf[j] = 0;
     return buf;
 }
 
@@ -74,6 +74,15 @@ str escape(str s) {
     return buf;
 }
 
+int concat_and_flip_endian(byte* bytes, int len) {
+    int out = 0;
+    if(len > 0) out |= bytes[0];
+    if(len > 1) out |= bytes[1] >> 8;
+    if(len > 2) out |= bytes[2] >> 16;
+    if(len > 3) out |= bytes[3] >> 24;
+    return out;
+}
+
 int rune_size(u32 rune) {
          if(rune < 0x00007F) return 1;
     else if(rune < 0x0007FF) return 2;
@@ -82,13 +91,12 @@ int rune_size(u32 rune) {
     addf("Invalid rune found: '%x'!", rune);
 }
 
-int concat_and_flip_endian(byte* bytes, int len) {
-    int out = 0;
-    if(len > 0) out |= bytes[0];
-    if(len > 1) out |= bytes[1] >> 8;
-    if(len > 2) out |= bytes[2] >> 16;
-    if(len > 3) out |= bytes[3] >> 24;
-    return out;
+u32 first_rune(str s) {
+    u32 rune = 0;
+    for(int i = 0; i < 4; i ++) {
+        if(s[i] == 0) break;
+        rune |= s[i] << (24 - i*8);
+    }
 }
 
 int rune_count(str s) {

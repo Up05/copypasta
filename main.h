@@ -15,7 +15,7 @@ typedef char* str;
 typedef unsigned char byte;
 typedef unsigned int  u32;
 
-#define len_of(ARRAY) (sizeof(ARRAY) / sizeof((ARRAY)[0]))
+#define len_of(ARRAY) (sizeof(ARRAY) / sizeof(*(ARRAY)))
 #define foreach(I, ARRAY) for(int I = 0; I < len_of(ARRAY); I ++)
 #define ADDF_BUFFER_SIZE 128
 #define addfs(SIZE, FMT, ...) { char BUF[SIZE]; snprintf(BUF, sizeof BUF, FMT, __VA_ARGS__); addstr(BUF); }
@@ -24,6 +24,7 @@ typedef unsigned int  u32;
 #define min(a, b) ( (a)*((a) <= (b))  +  (b)*((a)  > (b)) )
 #define max(a, b) ( (a)*((a)  > (b))  +  (b)*((a) <= (b)) )
 
+#define LETTER_COUNT ('Z' - 'A' + 1) // 26
 #define COLORS_HIGHLIGHTED 1
 
 void u_move(int x, int y);
@@ -51,15 +52,17 @@ int index_char(str s, char c);
 str slice(str s, int from, int to);
 str del_esc_chars(str s);
 str escape(str s);
+int rune_size(u32 rune);
 int rune_count(str s);
+u32 first_rune(str s); 
 
 extern Category categories[32];
 extern int cur_category;
 extern int cur_row;
 extern int cur_col;
 extern int last_category_x;
-extern int row_offsets['Z' - 'A'];
-extern int item_table['Z' - 'A'][9];
+extern int row_offsets[LETTER_COUNT];
+extern int item_table[LETTER_COUNT][9];
 extern int plus_item_col, plus_item_row;
 extern int last_key;
 

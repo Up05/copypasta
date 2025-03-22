@@ -1,4 +1,5 @@
 #include "main.h"
+#include <unistd.h>
 
 int last_key = ' ';
 
@@ -19,8 +20,11 @@ void select_item() {
     fmt_highlight(false);
 
     copy(item->text);
-    // TODO: set timeout for 200ms
-    // u_refresh();
+    
+    refresh();
+    napms(200);
+    u_refresh();
+
 reset:
     cur_col = -1;
     cur_row = -1;
@@ -45,6 +49,7 @@ bool handle_key(int key) {
     }
 
     switch(key) {
+    case 27: endwin(); exit(0); // escape key
     case '&':
         u_move(last_category_x, 0);
         addstr(repeat(' ', 20));
